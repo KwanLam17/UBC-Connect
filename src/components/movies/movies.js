@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
 import Searchbar from './SearchBar';
-
-const key = '7a5c40a1d0f6b5aa678b482c63823678';
+import SearchList from './SearchList';
 
 class Movies extends Component {
     render() {
         return (
             <div>
                 <Searchbar />
+                <SearchList />
             </div>
         )
     }
