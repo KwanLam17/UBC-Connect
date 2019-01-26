@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "google-maps-react": "^2.0.2",
     "react": "^16.4.2",
     "react-app-rewire-hot-loader": "^1.0.1",
     "react-app-rewired": "^1.6.2",
