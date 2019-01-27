@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 import './GoogleMap.css';
 
+const RADIUS = 0.1;
+
 class GoogleMap extends Component {
-    state = {
-        showingInfoWindow: false,
-        activeMarker: {},
-        selectedPlace: {},
+    constructor(props){
+        super(props);
+        this.state = {
+            showingInfoWindow: false,
+            activeMarker: {},
+            eventMarkers: [],
+            selectedPlace: {}
+        };
+        this.onMapClicked = this.onMapClicked.bind(this);
     }
 
     onMarkerClick = (props, marker, e) =>
@@ -17,8 +25,23 @@ class GoogleMap extends Component {
             showingInfoWindow: true
     });
 
-    onMapClicked = (props) => {
-        console.log(props);
+    onMapClicked = (mapProps, props, map, clickEvent) => {
+        // console.log(props);
+        // console.log(map.latLng.lat())
+        let newEventMarkers = [... this.state.eventMarkers];
+
+        newEventMarkers.push({
+            lat: map.latLng.lat(),
+            lng: map.latLng.lng(),
+            numOfEvents: 1
+        });
+
+        this.setState({
+            eventMarkers: newEventMarkers,
+            selectedPlace: {},
+        })
+        // console.log(this.state.eventMarkers);
+        console.log(this.state.activeMarker);
         if (this.state.showingInfoWindow) {
           this.setState({
             showingInfoWindow: false,
@@ -26,6 +49,18 @@ class GoogleMap extends Component {
           })
         }
       };
+
+    renderMarkers() {
+        return this.state.eventMarkers.map( marker => {
+            return (
+                    <Marker 
+                        key= {marker.lat + marker.lng}
+                        onClick={this.onMarkerClick}
+                        position={{lat: marker.lat, lng: marker.lng}}
+                        name={marker.numOfEvents}/>
+            )
+        })
+    }
 
     render() {
         return (
@@ -48,6 +83,8 @@ class GoogleMap extends Component {
                     zoom={14}
                     onClick={this.onMapClicked}>
 
+                    {this.renderMarkers()}
+
                     <Marker onClick={this.onMarkerClick}
                             name={ 'Current Location' } />
 
@@ -64,6 +101,6 @@ class GoogleMap extends Component {
     }
 }
 
-export default GoogleApiWrapper({
+export default (GoogleApiWrapper({
     apiKey: "AIzaSyDnPlU5in_-pgigO6zRLGXB6sYG7B0h0v8"
-})(GoogleMap);
+}))(GoogleMap);
