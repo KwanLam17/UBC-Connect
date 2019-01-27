@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 import './GoogleMap.css';
 
-const RADIUS = 100;
-
 class GoogleMap extends Component {
     constructor(props){
         super(props);
@@ -65,13 +63,13 @@ class GoogleMap extends Component {
                 numOfEvents: 1
             });
 
-            this.setState({
-                eventMarkers: newEventMarkers,
-                selectedPlace: {},
-            });
+        this.props.eventsHandler(newEventMarkers)
 
-        // console.log(this.state.eventMarkers);
-        console.log(this.state.activeMarker);
+        this.setState({
+            eventMarkers: newEventMarkers,
+            selectedPlace: {},
+        })
+      
         if (this.state.showingInfoWindow) {
           this.setState({
             showingInfoWindow: false,
@@ -94,18 +92,18 @@ class GoogleMap extends Component {
 
     render() {
         return (
-            <div className="map" style={{
-                position: 'absolute',
-            margin: 'auto',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            width: 900,
-            height: 500,
-            }}>
+            <div style={{
+    position: 'absolute',
+ margin: 'auto',
+ top: 0,
+ right: 0,
+ bottom: 0,
+ left: 0,
+ width: 900,
+ height: 500,
+  }}>
                 <Map 
-                    google={this.props.google} 
+                    google={this.props.google}
                     initialCenter={{
                         lat: 49.2606,
                         lng: -123.2460
@@ -126,6 +124,30 @@ class GoogleMap extends Component {
                         </div>
                     </InfoWindow>
                 </Map>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
+                <div>:)</div>
             </div>
         )
     }
