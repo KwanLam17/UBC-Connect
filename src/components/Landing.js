@@ -8,17 +8,22 @@ class Landing extends Component {
         super(props)
 
         this.state = {
-            events: []
+            events: {
+                empty: true,
+                dummy: false
+            }
         };
 
         this.eventsHandler = this.eventsHandler.bind(this)
     }
 
     eventsHandler(events) {
-        // console.log(events);
+        console.log(events);
         this.setState({
-            events: events
+            events: events,
+            dummy: !this.state.dummy
         });
+        console.log(this.props.children);
     }
 
     render() {
@@ -28,7 +33,7 @@ class Landing extends Component {
                 <div className="row">
                     <div className="col-lg-12">
                         <GoogleMap eventsHandler = {this.eventsHandler} />
-                        <GoogleList eventList = {this.state.events} />
+                        {/* <GoogleList dummyVal = {!this.state.dummy} eventList = {this.state.events} /> */}
                     </div>
                 </div>
             </div>

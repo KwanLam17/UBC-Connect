@@ -3,18 +3,20 @@ import { connect } from 'react-redux';
 
 class GoogleList extends Component {
     renderEvents() {
-        return this.props.eventList.map( event => {
-            return (
-                <li>
-                    TEST
-                </li>
-            )
-        })
+        return <li> {this.props.eventList["numOfEvents"]} </li>
+
+        // return this.props.eventList.map( event => {
+        //     return (
+        //         <li>
+        //             TEST
+        //         </li>
+        //     )
+        // })
     }
 
     render() {
-        // console.log(this.props);
-        if(this.props.eventList.length === 0){
+        console.log(this.props);
+        if(this.props.eventList["empty"] === true){
             return (
                 <div>
                     No results...
