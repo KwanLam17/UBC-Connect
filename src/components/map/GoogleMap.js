@@ -4,28 +4,6 @@ import { connect } from 'react-redux';
 import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 import './GoogleMap.css';
 
-// const style = {
-//     position: 'absolute',
-//  margin: 'auto',
-//  top: 0,
-//  right: 600,
-//  bottom: 220,
-//  left: 0,
-//  width: 670,
-//  height: 500,
-//   }
-
-// const style = {
-//     position: 'absolute',
-//  margin: 'auto',
-//  top: 0,
-//  right: 0,
-//  bottom: 0,
-//  left: 0,
-//  width: '100%',
-//  height: '100%',
-//   }
-
 class GoogleMap extends Component {
     constructor(props){
         super(props);
@@ -45,16 +23,45 @@ class GoogleMap extends Component {
             showingInfoWindow: true
     });
 
-    onMapClicked = (mapProps, props, map, clickEvent) => {
-        // console.log(props);
-        // console.log(map.latLng.lat())
-        let newEventMarkers = [... this.state.eventMarkers];
+    shouldMakeNewMarker(lat1, lat2, lon1, lon2) {
+        let R = 6371e3;
+        let lat1_rad = this.radians(lat1);
+        let lat2_rad = this.radians(lat2);
+        let lat_change = this.radians(lat2 - lat1);
+        let lon_change = this.radians(lon2 - lon1);
 
-        newEventMarkers.push({
-            lat: map.latLng.lat(),
-            lng: map.latLng.lng(),
-            numOfEvents: 1
-        });
+        let a = Math.sin(lat_change/2) * Math.sin(lat_change/2) +
+            Math.cos(lat1_rad) * Math.cos(lat2_rad) *
+            Math.sin(lon_change/2) * Math.sin(lon_change/2);
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        let d = R * c;
+        console.log(d);
+        return d > RADIUS;
+    }
+
+    radians = function(degrees) {
+        return degrees * Math.PI / 180;
+    };
+
+
+    onMapClicked = (mapProps, props, map, clickEvent) => {
+
+        for (let eventMarker of this.state.eventMarkers) {
+            if (!this.shouldMakeNewMarker(eventMarker.lat, map.latLng.lat(),
+                eventMarker.lng, map.latLng.lng())) {
+                return;
+            }
+        }
+
+
+            let newEventMarkers = [... this.state.eventMarkers];
+
+            newEventMarkers.push({
+                lat: map.latLng.lat(),
+                lng: map.latLng.lng(),
+                numOfEvents: 1
+            });
 
         this.props.eventsHandler(newEventMarkers)
 
@@ -62,7 +69,7 @@ class GoogleMap extends Component {
             eventMarkers: newEventMarkers,
             selectedPlace: {},
         })
-
+      
         if (this.state.showingInfoWindow) {
           this.setState({
             showingInfoWindow: false,
