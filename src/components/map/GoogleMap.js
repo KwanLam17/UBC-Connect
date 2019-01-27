@@ -1,8 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import GoogleMapReact from 'google-map-react';
+
 import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 import './GoogleMap.css';
+
+const RADIUS = 500;
+
+const AnyReactComponent = ({ text }) => <div>{text}</div>
+
+const style= {
+ top: 0,
+ right: 550,
+ bottom: 210,
+ left: 0,
+ width: 580,
+ height: 520,
+  }
 
 class GoogleMap extends Component {
     constructor(props){
@@ -16,12 +31,13 @@ class GoogleMap extends Component {
         this.onMapClicked = this.onMapClicked.bind(this);
     }
 
-    onMarkerClick = (props, marker, e) =>
+    onMarkerClick = (props, marker, e) => {
         this.setState({
             selectedPlace: props,
             activeMarker: marker,
             showingInfoWindow: true
-    });
+        });
+    };
 
     shouldMakeNewMarker(lat1, lat2, lon1, lon2) {
         let R = 6371e3;
@@ -36,8 +52,9 @@ class GoogleMap extends Component {
         let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
         let d = R * c;
-        console.log(d);
-        return d > RADIUS;
+        // console.log(d);
+        // return d > RADIUS;
+        return d;
     }
 
     radians = function(degrees) {
@@ -46,22 +63,42 @@ class GoogleMap extends Component {
 
 
     onMapClicked = (mapProps, props, map, clickEvent) => {
+        let newEventMarkers = [... this.state.eventMarkers];
 
-        for (let eventMarker of this.state.eventMarkers) {
-            if (!this.shouldMakeNewMarker(eventMarker.lat, map.latLng.lat(),
-                eventMarker.lng, map.latLng.lng())) {
-                return;
+        let dist;
+        let index;
+
+        for (let i = 0; i < newEventMarkers.length; i++) {
+        // for (let eventMarker of newEventMarkers) {
+            let tempDist = this.shouldMakeNewMarker(newEventMarkers[i].lat, map.latLng.lat(),
+                newEventMarkers[i].lng, map.latLng.lng());
+
+            if (dist === undefined) {
+                dist = tempDist;
+                index = i;
+            } else if (dist >= tempDist) {
+                dist = tempDist;
+                index = i;
             }
         }
 
+        if (dist <= RADIUS) {
+            console.log("Hi");
+            let temp = newEventMarkers[index];
+            temp["numOfEvents"]++;
+            newEventMarkers.splice(index, 1);
+            newEventMarkers.push(temp);
+            this.setState({
+            eventMarkers: newEventMarkers
+            })
+            return;
+        }
 
-            let newEventMarkers = [... this.state.eventMarkers];
-
-            newEventMarkers.push({
-                lat: map.latLng.lat(),
-                lng: map.latLng.lng(),
-                numOfEvents: 1
-            });
+        newEventMarkers.push({
+            lat: map.latLng.lat(),
+            lng: map.latLng.lng(),
+            numOfEvents: 1
+        });
 
         this.props.eventsHandler(newEventMarkers)
 
@@ -92,18 +129,10 @@ class GoogleMap extends Component {
 
     render() {
         return (
-            <div style={{
-    position: 'absolute',
- margin: 'auto',
- top: 0,
- right: 0,
- bottom: 0,
- left: 0,
- width: 900,
- height: 500,
-  }}>
+            <div>
                 <Map 
                     google={this.props.google}
+                    style={style}
                     initialCenter={{
                         lat: 49.2606,
                         lng: -123.2460
@@ -124,32 +153,12 @@ class GoogleMap extends Component {
                         </div>
                     </InfoWindow>
                 </Map>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
-                <div>:)</div>
+                <div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div>
+                <div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div><div>.</div>
+                <div>.</div><div>.</div>
                 <div>:)</div>
             </div>
-        )
+        );
     }
 }
 
