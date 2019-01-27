@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
 import './GoogleMap.css';
 
-const RADIUS = 0.1;
+const RADIUS = 100;
 
 class GoogleMap extends Component {
     constructor(props){
@@ -25,21 +25,51 @@ class GoogleMap extends Component {
             showingInfoWindow: true
     });
 
+    shouldMakeNewMarker(lat1, lat2, lon1, lon2) {
+        let R = 6371e3;
+        let lat1_rad = this.radians(lat1);
+        let lat2_rad = this.radians(lat2);
+        let lat_change = this.radians(lat2 - lat1);
+        let lon_change = this.radians(lon2 - lon1);
+
+        let a = Math.sin(lat_change/2) * Math.sin(lat_change/2) +
+            Math.cos(lat1_rad) * Math.cos(lat2_rad) *
+            Math.sin(lon_change/2) * Math.sin(lon_change/2);
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        let d = R * c;
+        console.log(d);
+        return d > RADIUS;
+    }
+
+    radians = function(degrees) {
+        return degrees * Math.PI / 180;
+    };
+
+
     onMapClicked = (mapProps, props, map, clickEvent) => {
-        // console.log(props);
-        // console.log(map.latLng.lat())
-        let newEventMarkers = [... this.state.eventMarkers];
 
-        newEventMarkers.push({
-            lat: map.latLng.lat(),
-            lng: map.latLng.lng(),
-            numOfEvents: 1
-        });
+        for (let eventMarker of this.state.eventMarkers) {
+            if (!this.shouldMakeNewMarker(eventMarker.lat, map.latLng.lat(),
+                eventMarker.lng, map.latLng.lng())) {
+                return;
+            }
+        }
 
-        this.setState({
-            eventMarkers: newEventMarkers,
-            selectedPlace: {},
-        })
+
+            let newEventMarkers = [... this.state.eventMarkers];
+
+            newEventMarkers.push({
+                lat: map.latLng.lat(),
+                lng: map.latLng.lng(),
+                numOfEvents: 1
+            });
+
+            this.setState({
+                eventMarkers: newEventMarkers,
+                selectedPlace: {},
+            });
+
         // console.log(this.state.eventMarkers);
         console.log(this.state.activeMarker);
         if (this.state.showingInfoWindow) {
